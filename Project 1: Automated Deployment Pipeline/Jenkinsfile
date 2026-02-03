@@ -4,6 +4,7 @@ pipeline {
      environment {
           DOCKER_CREDENTIALS_USR = credentials('docker-username')
           DOCKER_CREDENTIALS_PSW = credentials('docker-password')
+          IMAGE_NAME = 'myapp'
      }
      
      stages {
@@ -20,10 +21,9 @@ pipeline {
                     sh 'docker push $DOCKER_CREDENTIALS_USR/$IMAGE_NAME:latest'
                }
           }
-          stage('Test') {
+          stage('Test with Unit Tests') {
                steps {
-                    echo 'Testing...'
-                    echo 'Tests passed!'
+                    sh 'docker run $DOCKER_CREDENTIALS_USR/$IMAGE_NAME:latest ./run-unit-tests.sh'
                }
           }
           stage('Deploy') {

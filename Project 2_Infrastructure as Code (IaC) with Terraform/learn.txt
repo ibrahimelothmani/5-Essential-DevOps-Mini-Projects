@@ -1,0 +1,43 @@
+1. Initialize Terraform:
+terraform init
+
+2. Validate the Configuration:
+terraform validate
+
+3. Plan the Deployment:
+terraform plan
+
+4. Apply the Configuration:
+terraform apply
+
+Verify the Deployment
+1. Access the AWS Console:
+Verify that the VPC, subnets, internet gateway, and EC2 instance
+are created in the AWS Management Console.
+
+2. SSH into the EC2 Instance:
+Use the private key corresponding to your key pair to access the
+EC2 instance:
+ssh -i <private-key.pem> ec2-user@<public-ip>
+
+3. Test Connectivity:
+Install and configure a basic web server (e.g., Apache or Nginx):
+sudo yum install httpd -y
+sudo systemctl start httpd
+sudo systemctl enable httpd
+echo "Hello, Terraform!" | sudo tee /var/www/html/index.html
+
+Access the web server in your browser using the instance’s public IP.
+
+Destroy the Resources
+To clean up and avoid unnecessary costs, destroy the resources:
+terraform destroy
+
+
+Key Takeaways
+1. IaC Fundamentals: Learn to define, provision, and manage infrastructure using Terraform.
+2. AWS Resources: Understand the basics of VPCs, subnets, internet gateways, security groups, and EC2 instances.
+3. Automation: Automate infrastructure provisioning to minimize manual efforts and reduce errors.
+4. Reusability: Build reusable and modular Terraform code for different environments.
+
+This project is a hands-on introduction to Terraform and AWS infrastructure, laying a strong foundation for more advanced DevOps automation and cloud management practices.

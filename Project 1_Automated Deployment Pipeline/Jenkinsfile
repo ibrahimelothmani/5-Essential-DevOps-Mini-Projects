@@ -4,7 +4,7 @@ pipeline {
      environment {
           DOCKER_CREDENTIALS_USR = credentials('docker-username')
           DOCKER_CREDENTIALS_PSW = credentials('docker-password')
-          IMAGE_NAME = 'myapp'
+          IMAGE_NAME = 'my-pokemon-app'
      }
      
      stages {

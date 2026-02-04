@@ -1,0 +1,34 @@
+
+# Node.js dependencies
+node_modules/
+
+
+# Virtual environments
+.env
+.venv
+
+# IDEs
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+logs/
+
+# Docker (if building locally)
+.dockerignore
+
+# Jenkins (if any local artifacts)
+build/
+dist/
+
+# Secrets
+secrets/
+*.key
+*.pem

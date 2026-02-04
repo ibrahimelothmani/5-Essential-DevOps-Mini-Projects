@@ -1,0 +1,50 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+Vagrant.configure("2") do |config|
+  # Base box
+  config.vm.box = "centos/7"
+  
+  # VM hostname
+  config.vm.hostname = "centos7-vm"
+  
+  # Disable automatic box update checking
+  config.vm.box_check_update = false
+  
+  # Network configuration
+  # Private network with static IP
+  # config.vm.network "private_network", ip: "192.168.33.10"
+  
+  # Public network (bridged)
+  # config.vm.network "public_network"
+  
+  # Port forwarding (if needed)
+  # config.vm.network "forwarded_port", guest: 80, host: 8080
+  # config.vm.network "forwarded_port", guest: 443, host: 8443
+  
+  # Synced folder
+  # config.vm.synced_folder ".", "/vagrant", type: "nfs"
+  
+  # Provider-specific configuration for libvirt
+  config.vm.provider "libvirt" do |libvirt|
+    libvirt.driver = "kvm"
+    libvirt.memory = 2048
+    libvirt.cpus = 2
+    libvirt.video_vram = 256
+  end
+  
+  # Provisioning script (optional)
+  config.vm.provision "shell", inline: <<-SHELL
+    # Update system
+    yum update -y
+    
+    # Install useful packages
+    yum install -y vim git wget curl net-tools
+    
+    # Disable SELinux (optional, for development)
+    # setenforce 0
+    # sed -i 's/SELINUX=enforcing/SELINUX=disabled/g' /etc/selinux/config
+    
+    echo "CentOS 7 VM provisioned successfully!"
+  SHELL
+end

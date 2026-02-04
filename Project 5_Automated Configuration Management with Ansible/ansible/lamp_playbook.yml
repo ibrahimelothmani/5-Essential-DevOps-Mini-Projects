@@ -1,0 +1,120 @@
+---
+- name: Setup LAMP Stack
+  hosts: webservers
+  become: yes
+
+  vars:
+    mysql_root_password: rootpassword
+    php_app_path: /var/www/html/index.php
+
+  tasks:
+    # -------------------------------
+    # Task 1: Update system packages
+    # -------------------------------
+    - name: Update and upgrade apt packages
+      apt:
+        update_cache: yes
+        upgrade: dist
+
+    # -------------------------------
+    # Task 2: Install Apache
+    # -------------------------------
+    - name: Install Apache
+      apt:
+        name: apache2
+        state: present
+
+    - name: Ensure Apache is running and enabled
+      service:
+        name: apache2
+        state: started
+        enabled: true
+
+    # -------------------------------
+    # Task 3: Install MySQL
+    # -------------------------------
+    - name: Install MySQL server
+      apt:
+        name: mysql-server
+        state: present
+
+    - name: Ensure MySQL is running and enabled
+      service:
+        name: mysql
+        state: started
+        enabled: true
+
+    # -------------------------------
+    # Task 4: Install MySQL Python dependency
+    # -------------------------------
+    - name: Install python3-pymysql
+      apt:
+        name: python3-pymysql
+        state: present
+
+    # -------------------------------
+    # Task 5: Secure MySQL (Ansible way)
+    # -------------------------------
+    - name: Set MySQL root password
+      mysql_user:
+        name: root
+        host: localhost
+        password: "{{ mysql_root_password }}"
+        priv: '*.*:ALL,GRANT'
+        login_unix_socket: /var/run/mysqld/mysqld.sock
+        state: present
+
+    - name: Remove anonymous MySQL users
+      mysql_user:
+        name: ''
+        host_all: yes
+        login_unix_socket: /var/run/mysqld/mysqld.sock
+        state: absent
+
+    - name: Remove test database
+      mysql_db:
+        name: test
+        state: absent
+        login_unix_socket: /var/run/mysqld/mysqld.sock
+
+    - name: Disallow remote root login
+      mysql_user:
+        name: root
+        host: '%'
+        login_unix_socket: /var/run/mysqld/mysqld.sock
+        state: absent
+
+    # -------------------------------
+    # Task 6: Install PHP
+    # -------------------------------
+    - name: Install PHP and required modules
+      apt:
+        name:
+          - php
+          - php-mysql
+        state: present
+
+    # -------------------------------
+    # Task 7: Deploy sample PHP app
+    # -------------------------------
+    - name: Deploy PHP test application
+      copy:
+        dest: "{{ php_app_path }}"
+        owner: www-data
+        group: www-data
+        mode: '0644'
+        content: |
+          <?php
+          $conn = new mysqli("localhost", "root", "{{ mysql_root_password }}");
+          if ($conn->connect_error) {
+              die("Connection failed: " . $conn->connect_error);
+          }
+          echo "Connected successfully. Welcome to Ansible LAMP!";
+          ?>
+      notify: Restart Apache
+
+  handlers:
+    - name: Restart Apache
+      service:
+        name: apache2
+        state: restarted
